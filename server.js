@@ -1,67 +1,12 @@
 import express from "express";
-
-const posts = [
-  {
-    descricao: "Uma foto teste",
-    imagem: "https://placecaats.com/millie/300/150",
-    id: 1
-  },
-  {
-    descricao: "Paisagem deslumbrante",
-    imagem: "https://placecaats.com/nature/800/600",
-    id: 2
-  },
-  {
-    descricao: "Cachorro fofo",
-    imagem: "https://placecaats.com/animals/400/300",
-    id: 3
-  },
-  {
-    descricao: "Comida deliciosa",
-    imagem: "https://placecaats.com/food/600/400",
-    id: 4
-  },
-  { 
-    descricao: "Cidade vibrante",
-    imagem: "https://placecaats.com/city/1200/800",
-    id: 5
-  },
-  {
-    descricao: "Gráfico interessante",
-    imagem: "https://placecaats.com/data/500/400",
-    id: 6
-  }
-];
+// Importa o framework Express.js para criar a aplicação web. Ele fornece as funcionalidades básicas para criar um servidor HTTP e lidar com requisições e respostas.
+import routes from "./src/routes/postsRoutes.js";
 
 const app = express();
-app.use(express.json());
+// Cria uma instância do Express, que será o ponto central da nossa aplicação. Essa instância será utilizada para definir as rotas e as funcionalidades do servidor.
+routes(app);
 
 app.listen(3000, () => {
   console.log("Servidor escutando...");
 });
-
-
-app.get("/posts", (req, res) => {
-  res.status(200).json(posts);
-});
-
-function buscarPostPorID(id) {
-  return posts.findIndex((post) => {
-    return post.id === Number(id);
-  });
-};
-
-app.get("/posts/:id", (req, res) => {
-  const index = buscarPostPorID(req.params.id);
-  res.status(200).json(posts[index]);
-});
-
-app.get('/livro', (req, res) => {
-  const livro = {
-    titulo: "O Senhor dos Anéis",
-    autor: "J.R.R. Tolkien",
-    ano: 1954
-  };
-
-  res.status(200).json(livro);
-});
+// Inicia o servidor na porta 3000. Quando o servidor estiver pronto para receber requisições, a mensagem "Servidor escutando..." será exibida no console.
