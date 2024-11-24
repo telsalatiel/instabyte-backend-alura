@@ -1,6 +1,12 @@
 import express from "express";
 import multer from "multer";
-import { listarPosts, postarNovoPost, uploadImagem } from "../controllers/postsController.js";
+import { listarPosts, postarNovoPost, uploadImagem, atualizarNovoPost } from "../controllers/postsController.js";
+import cors from "cors";
+
+const corsOptions = {
+  origin:"http://localhost:8000",
+  optionsSuccessStatus: 200
+}
 
 // Configura o armazenamento dos arquivos enviados.
 // Neste caso, os arquivos serão salvos na pasta 'uploads'
@@ -24,6 +30,7 @@ const upload = multer({ dest: "./uploads" , storage})
 // Função que define as rotas da aplicação.
 // Recebe como parâmetro a instância do Express.
 const routes = (app) => {
+  app.use(cors(cors))
   // Habilita o middleware `express.json()`.
   // Esse middleware permite que a aplicação entenda requisições com corpo JSON.
   app.use(express.json());
@@ -40,6 +47,8 @@ const routes = (app) => {
   // O middleware `upload.single('imagem')` trata o arquivo enviado.
   // Chama a função `uploadImagem` do controlador.
   app.post("/upload", upload.single("imagem"), uploadImagem);
+
+  app.put("/upload/:id", atualizarNovoPost)
 };
 
 export default routes;

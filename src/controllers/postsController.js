@@ -1,52 +1,60 @@
-import {getTodosPosts, criarPost} from "../models/postsModel.js";
+import {getTodosPosts, criarPost, atualizarPost} from "../models/postsModel.js";
 import fs from "fs";
+import gerarDescricaoComGemini from "../services/geminiService.js"
 
 export async function listarPosts(req, res) {
-  // Define uma rota GET para a URL "/posts". Quando uma requisição GET for feita para essa URL, esta função será executada.
-  const posts = await getTodosPosts();
-  // Chama a função `getTodosPosts` para obter todos os posts do banco de dados e armazena o resultado na variável `posts`.
-  res.status(200).json(posts);
-  // Envia uma resposta HTTP com o código de status 200 (OK) e o array de posts no formato JSON. O método `json()` converte o objeto JavaScript em uma string JSON.
+    // Chama a função para buscar os posts
+    const posts = await getTodosPosts();
+    // Envia uma resposta HTTP com status 200 (OK) e os posts no formato JSON
+    res.status(200).json(posts);
 }
 
 export async function postarNovoPost(req, res) {
-  // Obtém os dados do novo post do corpo da requisição.
-  const novoPost = req.body;
-
-  try {
-    // Cria um novo post no banco de dados.
-    const postCriado = await criarPost(novoPost);
-
-    // Retorna o post criado como resposta JSON com status 200 (sucesso).
-    res.status(200).json(postCriado);
-  } catch (erro) {
-    // Caso ocorra um erro, registra o erro no console e retorna uma resposta com status 500 (erro interno do servidor).
-    console.error(erro.message);
-    res.status(500).json({"Erro":"Falha na requisição"});
-  }
+    const novoPost = req.body;
+    try {
+        const postCriado = await criarPost(novoPost);
+        res.status(200).json(postCriado);  
+    } catch(erro) {
+        console.error(erro.message);
+        res.status(500).json({"Erro":"Falha na requisição"})
+    }
 }
 
 export async function uploadImagem(req, res) {
-  // Cria um objeto com os dados do novo post, incluindo o nome original da imagem.
-  const novoPost = {
-    descricao: "",
-    imgUrl: req.file.originalname,
-    alt: ""
-  };
+    const novoPost = {
+        descricao: "",
+        imgUrl: req.file.originalname,
+        alt: ""
+    };
 
-  try {
-    // Cria um novo post no banco de dados.
-    const postCriado = await criarPost(novoPost);
+    try {
+        const postCriado = await criarPost(novoPost);
+        const imagemAtualizada = `uploads/${postCriado.insertedId}.png`
+        fs.renameSync(req.file.path, imagemAtualizada)
+        res.status(200).json(postCriado);  
+    } catch(erro) {
+        console.error(erro.message);
+        res.status(500).json({"Erro":"Falha na requisição"})
+    }
+}
 
-    // Renomeia o arquivo da imagem para incluir o ID do post criado.
-    const imagemAtualizada = `uploads/${postCriado.insertedId}.png`;
-    fs.renameSync(req.file.path, imagemAtualizada);
+export async function atualizarNovoPost(req, res) {
+    const id = req.params.id;
+    const urlImagem = `http://localhost:3000/${id}.png`;
+    try {
+        const imgBuffer = fs.readFileSync(`uploads/${id}.png`);
+        const descricao = await gerarDescricaoComGemini(imgBuffer);
 
-    // Retorna o post criado como resposta JSON com status 200 (sucesso).
-    res.status(200).json(postCriado);
-  } catch (erro) {
-    // Caso ocorra um erro, registra o erro no console e retorna uma resposta com status 500 (erro interno do servidor).
-    console.error(erro.message);
-    res.status(500).json({"Erro":"Falha na requisição"});
-  }
+        const post = {
+            descricao: descricao,
+            imgUrl: urlImagem,
+            alt: req.body.alt
+        }
+
+        const postCriado = await atualizarPost(id, post);
+        res.status(200).json(postCriado);  
+    } catch(erro) {
+        console.error(erro.message);
+        res.status(500).json({"Erro":"Falha na requisição"});
+    }
 }
