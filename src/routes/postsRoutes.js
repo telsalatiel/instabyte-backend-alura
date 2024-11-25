@@ -30,10 +30,10 @@ const upload = multer({ dest: "./uploads" , storage})
 // Função que define as rotas da aplicação.
 // Recebe como parâmetro a instância do Express.
 const routes = (app) => {
-  app.use(cors(cors))
   // Habilita o middleware `express.json()`.
   // Esse middleware permite que a aplicação entenda requisições com corpo JSON.
   app.use(express.json());
+  app.use(cors(corsOptions));
 
   // Rota para buscar todos os posts.
   // Chama a função `listarPosts` do controlador.

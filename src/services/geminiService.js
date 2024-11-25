@@ -5,7 +5,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 export default async function gerarDescricaoComGemini(imageBuffer) {
   const prompt =
-    "Gere uma descrição em português do brasil para a seguinte imagem";
+    "Gere uma descrição em português do brasil para a seguinte imagem, sem a mensagem padrão tipo 'claro, aqui está', apenas a descrição";
 
   try {
     const image = {
@@ -20,4 +20,4 @@ export default async function gerarDescricaoComGemini(imageBuffer) {
     console.error("Erro ao obter alt-text:", erro.message, erro);
     throw new Error("Erro ao obter o alt-text do Gemini.");
   }
-}
+};

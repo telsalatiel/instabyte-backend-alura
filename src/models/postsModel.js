@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { ObjectId } from "mongodb";
 import conectarAoBanco from "../config/dbConfig.js";
 // Importa a função `conectarAoBanco` do arquivo `dbConfig.js`. Essa função é responsável por estabelecer a conexão com o banco de dados, utilizando a string de conexão fornecida.
@@ -8,7 +9,7 @@ const conexao = await conectarAoBanco(process.env.STRING_CONEXAO);
 export async function getTodosPosts() {
   // Função assíncrona para obter todos os posts do banco de dados. A palavra-chave `async` indica que a função pode realizar operações assíncronas, como consultas ao banco de dados.
   const db = conexao.db("imersao-instabyte");
-  // Obtém o banco de dados com o nome "imersao-instabyte" a partir da conexão estabelecida.
+  // Obtém o banco de dados com o nome "imersao-instabytes" a partir da conexão estabelecida.
   const colecao = db.collection("posts");
   // Obtém a coleção "posts" dentro do banco de dados. Uma coleção é similar a uma tabela em um banco de dados relacional, armazenando os documentos (registros).
   return colecao.find().toArray();
@@ -22,7 +23,7 @@ export async function criarPost(novoPost) {
 }
 
 export async function atualizarPost(id, novoPost) {
-  const db = conexao.db("imersao-instabytes");
+  const db = conexao.db("imersao-instabyte");
   const colecao = db.collection("posts");
   const objID = ObjectId.createFromHexString(id);
   return colecao.updateOne({_id: new ObjectId(objID)}, {$set:novoPost});
